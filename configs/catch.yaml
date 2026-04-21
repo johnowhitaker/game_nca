@@ -1,0 +1,29 @@
+game: catch
+height: 32
+width: 48
+pool_size: 160
+batch_size: 24
+train_steps: 800
+unroll_min: 5
+unroll_max: 12
+nca_steps_per_tick: 2
+lr: 0.0018
+save_every: 200
+log_every: 20
+render_every: 0
+render_steps: 140
+axis_loss_weight: 0.7
+game_loss_weight: 1.0
+nca:
+  state_channels: 14
+  hidden_channels: 80
+  update_rate: 0.5
+  delta_scale: 0.1
+  action_channel: 1
+  zero_last: true
+  seed_noise: 0.01
+catch:
+  paddle_half_width: 0.18
+  paddle_speed: 0.06
+  speed_min: 0.025
+  speed_max: 0.05

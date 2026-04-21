@@ -1,0 +1,22 @@
+[project]
+name = "nca-game"
+version = "0.1.0"
+description = "Neural cellular automata trained to control small differentiable games."
+requires-python = ">=3.10"
+dependencies = [
+  "torch",
+  "numpy",
+  "pillow",
+  "imageio",
+  "matplotlib",
+  "pyyaml",
+  "tqdm",
+]
+
+[project.scripts]
+nca-game-train = "nca_game.train:main"
+nca-game-render = "nca_game.render:main"
+nca-game-evaluate = "nca_game.evaluate:main"
+
+[tool.ruff]
+line-length = 120
