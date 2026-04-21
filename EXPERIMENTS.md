@@ -148,3 +148,36 @@ The renderer sampled 16 random 31x31 mazes and chose the longest solved candidat
 - Optimal path length: `294`
 - Rendered path length: `294`
 - Artifact: `runs/maze21_finetune/videos/maze31_best_of_16.mp4`
+
+## Glow Garden Flow NCA
+
+This was a more playful follow-up to the maze result. Instead of a single maze agent, random cave-like maps contain blue source cells and green flower cells. The NCA observes walls, sources, and flowers, then grows one internal channel into a flower potential field. Many particles spawn from the sources and follow the local gradient of that learned field, leaving orange/yellow trails.
+
+Training command:
+
+```bash
+python3 -m nca_game.train_flow --config configs/flow.yaml --out runs/flow_garden --device mps
+```
+
+Training was much easier than the brittle maze task because the cave fields are open and many local paths are acceptable. The direction accuracy reached roughly `95-97%` in the final third of training.
+
+Mid-run render:
+
+```bash
+python3 -m nca_game.render_flow runs/flow_garden/checkpoints/step_00500.pt --out runs/flow_garden/videos/glow_garden_500.mp4 --device mps --size 45 --seed 2027 --steps 360 --warmup 125 --particles 110 --capture-every 2 --fps 24
+```
+
+Final best-of render:
+
+```bash
+python3 -m nca_game.render_flow runs/flow_garden/checkpoints/latest.pt --out runs/flow_garden/videos/glow_garden_best_of_8.mp4 --device mps --size 45 --seed 4242 --candidates 8 --steps 480 --warmup 130 --particles 130 --capture-every 2 --fps 24
+```
+
+Result:
+
+- Best seed: `1324107816`
+- Candidate pre-score visits: `513`
+- Rendered flower visits: `566`
+- Artifact: `runs/flow_garden/videos/glow_garden_best_of_8.mp4`
+
+This is currently the most visually pleasant “toy ecosystem” artifact: particles stream along the learned luminous field while the hidden channels show broad propagating bands and obstacle shadows.

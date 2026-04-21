@@ -1,0 +1,23 @@
+seed: 23
+size: 45
+train_steps: 1200
+batch_size: 24
+dataset_count: 320
+lr: 0.0014
+save_every: 250
+log_every: 25
+state_l2: 0.00002
+value_loss_weight: 1.0
+direction_loss_weight: 0.75
+wall_loss_weight: 0.04
+nca_steps_min: 95
+nca_steps_max: 155
+nca:
+  state_channels: 18
+  obs_channels: 3
+  hidden_channels: 96
+  update_rate: 1.0
+  delta_scale: 0.12
+  action_channel: 1
+  zero_last: true
+  seed_noise: 0.01

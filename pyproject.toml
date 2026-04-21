@@ -20,6 +20,8 @@ nca-game-evaluate = "nca_game.evaluate:main"
 nca-game-train-maze = "nca_game.train_maze:main"
 nca-game-render-maze = "nca_game.render_maze:main"
 nca-game-evaluate-maze = "nca_game.evaluate_maze:main"
+nca-game-train-flow = "nca_game.train_flow:main"
+nca-game-render-flow = "nca_game.render_flow:main"
 
 [tool.ruff]
 line-length = 120
