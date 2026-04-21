@@ -18,6 +18,7 @@ Training uses a state pool, so sampled automata/game pairs are at different evol
 
 - `pong`: one-player differentiable Pong. The NCA reads ball, paddle, and wall pixels. The right-side brightness of channel 1 chooses the target `y` for the paddle.
 - `catch`: a smaller curriculum game. A falling target must be caught by a bottom paddle. The bottom brightness of channel 1 chooses target `x`.
+- `maze`: random perfect mazes. The NCA grows a one-channel value field from the goal through corridors, and an agent greedily follows the brightest neighboring cell.
 
 The loss combines game-derived tracking pressure with a distributional loss on the action channel. There are no CLIP or style losses.
 
@@ -28,6 +29,7 @@ Use the existing Python environment:
 ```bash
 python3 -m nca_game.train --config configs/catch.yaml --out runs/catch
 python3 -m nca_game.train --config configs/pong.yaml --out runs/pong
+python3 -m nca_game.train_maze --config configs/maze.yaml --out runs/maze
 ```
 
 On a Mac with MPS available, `--device auto` will choose it. You can force CPU with:
@@ -46,6 +48,7 @@ Evaluate a checkpoint:
 
 ```bash
 python3 -m nca_game.evaluate runs/pong/checkpoints/latest.pt --episodes 64 --steps 300
+python3 -m nca_game.evaluate_maze runs/maze/checkpoints/latest.pt --size 31 --count 128
 ```
 
 ## Outputs

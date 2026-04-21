@@ -1,0 +1,26 @@
+seed: 17
+train_steps: 1600
+batch_size: 24
+dataset_count: 384
+lr: 0.0012
+save_every: 250
+log_every: 25
+eval_mazes: 64
+state_l2: 0.00002
+value_loss_weight: 1.0
+direction_loss_weight: 1.35
+wall_loss_weight: 0.05
+nca:
+  state_channels: 16
+  obs_channels: 3
+  hidden_channels: 80
+  update_rate: 1.0
+  delta_scale: 0.14
+  action_channel: 1
+  zero_last: true
+  seed_noise: 0.01
+curriculum:
+  - until: 1600
+    size: 21
+    nca_steps_min: 92
+    nca_steps_max: 155

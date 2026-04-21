@@ -89,3 +89,62 @@ This run was useful as a smoke test for the x-axis action readout, but 120 steps
 - The reset-aware Pong checkpoint is the best current artifact.
 - The action-channel cross-entropy does decrease slowly; hit rate improved more clearly than coordinate error, which suggests the paddle-control dynamics are forgiving once the action field is roughly in the right vertical neighborhood.
 - A useful next run would anneal the action-readout temperature and train with a persistent pool that resets NCA state only on game resets.
+
+## Maze NCA
+
+The maze experiment changes the readout from a global paddle coordinate to a local slime-mold-style value field. The NCA observes three channels: walls, goal, and start. One internal channel is trained as a pheromone/value field on the optimal start-to-goal path. During rollout, the agent samples neighboring cells from that value field and prefers unvisited cells, which prevents trivial bouncing while still letting the learned field guide exploration.
+
+### First attempt
+
+The first curriculum used full BFS distance targets on every open cell with stochastic CA updates and too few NCA propagation steps. It produced smooth fields but no greedy solves:
+
+- `15x15`: about `0%` success in live eval after the short stage
+- `21x21`: about `0%`
+- `31x31`: about `0%`
+
+The core issue was propagation budget. A 31x31 perfect maze can have an optimal path around 240 cells long; a local automaton given 50-70 updates cannot propagate reliable goal information that far.
+
+### Path-focused target
+
+Changes:
+
+- Train only the optimal path as the high-value field, with non-path open cells suppressed.
+- Mask direction loss to the optimal path.
+- Use deterministic updates for mazes: `update_rate=1.0`.
+- Increase NCA updates with maze size.
+- Use a visited-cell trail during rollout, so the agent explores without two-cell loops.
+
+Training commands:
+
+```bash
+python3 -m nca_game.train_maze --config configs/maze.yaml --out runs/maze15_long --steps 2000 --device mps
+python3 -m nca_game.train_maze --config configs/maze_21.yaml --out runs/maze21_finetune --steps 1600 --device mps --resume runs/maze15_long/checkpoints/latest.pt
+```
+
+Evaluation of `runs/maze21_finetune/checkpoints/latest.pt`:
+
+```bash
+python3 -m nca_game.evaluate_maze runs/maze21_finetune/checkpoints/latest.pt --device mps --size 15 --count 256 --nca-steps 86
+python3 -m nca_game.evaluate_maze runs/maze21_finetune/checkpoints/latest.pt --device mps --size 21 --count 256 --nca-steps 145
+python3 -m nca_game.evaluate_maze runs/maze21_finetune/checkpoints/latest.pt --device mps --size 31 --count 128 --nca-steps 260
+```
+
+Results:
+
+- `15x15`: success rate `0.4648`, mean path ratio `2.2786`
+- `21x21`: success rate `0.4141`, mean path ratio `2.2939`
+- `31x31`: success rate `0.2734`, mean path ratio `2.5274`
+
+Video:
+
+```bash
+python3 -m nca_game.render_maze runs/maze21_finetune/checkpoints/latest.pt --out runs/maze21_finetune/videos/maze31_best_of_16.mp4 --device mps --size 31 --candidates 16 --nca-steps 260 --extra-steps 120 --capture-every 3 --move-every 2 --fps 24
+```
+
+The renderer sampled 16 random 31x31 mazes and chose the longest solved candidate first:
+
+- Best seed: `1151485119`
+- Size: `31x31`
+- Optimal path length: `294`
+- Rendered path length: `294`
+- Artifact: `runs/maze21_finetune/videos/maze31_best_of_16.mp4`

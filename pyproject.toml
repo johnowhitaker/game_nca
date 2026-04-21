@@ -17,6 +17,9 @@ dependencies = [
 nca-game-train = "nca_game.train:main"
 nca-game-render = "nca_game.render:main"
 nca-game-evaluate = "nca_game.evaluate:main"
+nca-game-train-maze = "nca_game.train_maze:main"
+nca-game-render-maze = "nca_game.render_maze:main"
+nca-game-evaluate-maze = "nca_game.evaluate_maze:main"
 
 [tool.ruff]
 line-length = 120
